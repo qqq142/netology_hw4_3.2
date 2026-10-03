@@ -2,58 +2,62 @@
 #include "catch.hpp"
 #include "list.h"
 
-TEST_CASE("Empty returns true for a new list") {
+TEST_CASE("PushBack increases size and stores correct value") {
     List list;
-    REQUIRE(list.Empty() == true);
-}
-
-TEST_CASE("Size is zero for a new list") {
-    List list;
-    REQUIRE(list.Size() == 0);
-}
-
-TEST_CASE("Size increases after PushFront and PushBack") {
-    List list;
-    list.PushFront(10);
+    list.PushBack(10);
     REQUIRE(list.Size() == 1);
     REQUIRE(list.Empty() == false);
 
     list.PushBack(20);
     REQUIRE(list.Size() == 2);
 
+    REQUIRE(list.PopBack() == 20);
+    REQUIRE(list.PopBack() == 10);
+    REQUIRE(list.Empty() == true);
+}
+
+TEST_CASE("PushFront increases size and stores correct value") {
+    List list;
     list.PushFront(5);
-    REQUIRE(list.Size() == 3);
-}
+    REQUIRE(list.Size() == 1);
 
-TEST_CASE("Clear resets size to zero and makes list empty") {
-    List list;
-    list.PushFront(1);
-    list.PushBack(2);
     list.PushFront(3);
-    REQUIRE(list.Size() == 3);
+    REQUIRE(list.Size() == 2);
 
-    list.Clear();
-    REQUIRE(list.Size() == 0);
+    REQUIRE(list.PopFront() == 3);
+    REQUIRE(list.PopFront() == 5);
     REQUIRE(list.Empty() == true);
 }
 
-TEST_CASE("Clear on an empty list does nothing and does not crash") {
+TEST_CASE("PopBack throws on empty list") {
     List list;
-    list.Clear();
-    REQUIRE(list.Size() == 0);
-    REQUIRE(list.Empty() == true);
+    REQUIRE_THROWS(list.PopBack());
 }
 
-TEST_CASE("After Clear we can push elements again") {
+TEST_CASE("PopFront throws on empty list") {
     List list;
-    list.PushFront(42);
-    list.PushBack(84);
-    list.Clear();
+    REQUIRE_THROWS(list.PopFront());
+}
+
+TEST_CASE("Complex scenario with Push/Pop combinations") {
+    List list;
+
+    list.PushBack(1);
+    list.PushFront(2);
+    list.PushBack(3); 
+    list.PushFront(4);
+
+    REQUIRE(list.Size() == 4);
+
+    REQUIRE(list.PopFront() == 4);
+    REQUIRE(list.PopBack() == 3);
+    REQUIRE(list.PopFront() == 2);
+    REQUIRE(list.PopBack() == 1);
+
+    REQUIRE(list.Size() == 0);
+    REQUIRE(list.Empty() == true);
 
     list.PushBack(100);
     REQUIRE(list.Size() == 1);
-    REQUIRE(list.Empty() == false);
-
-    list.PushFront(200);
-    REQUIRE(list.Size() == 2);
+    REQUIRE(list.PopFront() == 100);
 }
